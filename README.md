@@ -8,6 +8,7 @@ CodePush is a cloud service that enables Cordova and React Native developers to 
 ![CodePush CLI](https://cloud.githubusercontent.com/assets/245892/26749409/feb439f6-47d7-11e7-98fd-07d750b856d8.png)
 
 <!-- CLI Catalog -->
+* [Step By Step](#step-by-step)
 * [About This Fork](#about-this-fork)
 * [Installation](#installation)
 * [Getting Started](#getting-started)
@@ -30,6 +31,15 @@ CodePush is a cloud service that enables Cordova and React Native developers to 
 * [Viewing Release History](#viewing-release-history)
 * [Clearing Release History](#clearing-release-history)
 * [Code Signing](#code-signing)
+
+##Step By Step
+1. `npm i`
+1. `npm build`
+1. `npm link`
+1. `code-push login https://codepush-dev-b2b-travel.du.team`
+1. get appName with command `code-push app list`
+1. go to mobile app directory and call `code-push release-react <appName> <platform> -k '<path to current dir>/data/privateKey.pem' --targetBinaryVersion <targetBinaryVersion>`. Example `code-push release-react BestTrip-iOS ios -k './privateKey.pem' --targetBinaryVersion ">=1.0.0 <1.1.0"`. This code create staging version.
+1. After testing you can create production version with call [`code-push promote <appName> <sourceDeploymentName> <destDeploymentName>`](https://www.npmjs.com/package/code-push-cli#promoting-updates)
 
 
 <!-- CLI Catalog -->

@@ -46,9 +46,14 @@ var configFilePath: string = path.join(
     '.code-push.config',
 );
 var packageJson = require('../package.json');
+var credentialsJson = require('../data/credentials.json');
+const Buffer = require('buffer').Buffer;
 
 const CLI_HEADERS: Headers = {
     'X-CodePush-CLI-Version': packageJson.version,
+    Authorization: `Basic ${new Buffer(
+        `${credentialsJson.username}:${credentialsJson.password}`,
+    ).toString('base64')}`,
 };
 
 /** Deprecated */
