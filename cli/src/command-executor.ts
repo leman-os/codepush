@@ -46,7 +46,7 @@ var configFilePath: string = path.join(
     '.code-push.config',
 );
 var packageJson = require('../package.json');
-var credentialsJson = require('../data/credentials.json');
+var credentialsJson = require('../../data/credentials.json');
 const Buffer = require('buffer').Buffer;
 
 const CLI_HEADERS: Headers = {
