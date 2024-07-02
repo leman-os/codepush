@@ -2,6 +2,7 @@ import express from 'express';
 import { AppError } from '../core/app-error';
 import { Req } from '../core/middleware';
 import { clientManager } from '../core/services/client-manager';
+import { escapeHtml, escapeObjectHtml } from '../utils/sanitize';
 
 // routes for latest code push client
 export const indexV1Router = express.Router();
@@ -59,30 +60,32 @@ indexV1Router.get(
             .then((rs) => {
                 logger.info('update_check success');
 
-                res.send({
-                    update_info: {
-                        download_url: rs.downloadUrl,
-                        description: rs.description,
-                        is_available: rs.isAvailable,
-                        is_disabled: rs.isDisabled,
-                        // Note: need to use appVersion here to get it compatible with client side change...
-                        // https://github.com/microsoft/code-push/commit/7d2ffff395cc54db98aefba7c67889f509e8c249#diff-a937c637a47cbd31cbb52c89bef7d197R138
-                        target_binary_range: rs.appVersion,
-                        label: rs.label,
-                        package_hash: rs.packageHash,
-                        package_size: rs.packageSize,
-                        should_run_binary_version: rs.shouldRunBinaryVersion,
-                        update_app_version: rs.updateAppVersion,
-                        is_mandatory: rs.isMandatory,
-                    },
-                });
+                res.send(
+                    escapeObjectHtml({
+                        update_info: {
+                            download_url: rs.downloadUrl,
+                            description: rs.description,
+                            is_available: rs.isAvailable,
+                            is_disabled: rs.isDisabled,
+                            // Note: need to use appVersion here to get it compatible with client side change...
+                            // https://github.com/microsoft/code-push/commit/7d2ffff395cc54db98aefba7c67889f509e8c249#diff-a937c637a47cbd31cbb52c89bef7d197R138
+                            target_binary_range: rs.appVersion,
+                            label: rs.label,
+                            package_hash: rs.packageHash,
+                            package_size: rs.packageSize,
+                            should_run_binary_version: rs.shouldRunBinaryVersion,
+                            update_app_version: rs.updateAppVersion,
+                            is_mandatory: rs.isMandatory,
+                        },
+                    }),
+                );
             })
             .catch((e) => {
                 if (e instanceof AppError) {
                     logger.info('update check failed', {
                         error: e.message,
                     });
-                    res.status(404).send(e.message);
+                    res.status(404).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }

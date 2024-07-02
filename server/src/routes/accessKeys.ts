@@ -6,6 +6,7 @@ import { checkToken, Req } from '../core/middleware';
 import { accountManager } from '../core/services/account-manager';
 import { randToken } from '../core/utils/security';
 import { UserTokens } from '../models/user_tokens';
+import { escapeHtml, escapeObjectHtml } from '../utils/sanitize';
 
 export const accessKeysRouter = express.Router();
 
@@ -17,7 +18,7 @@ accessKeysRouter.get('/', checkToken, (req: Req, res, next) => {
         .getAllAccessKeyByUid(uid)
         .then((accessKeys) => {
             logger.info('get acceesKeys success', { uid });
-            res.send({ accessKeys });
+            res.send(escapeObjectHtml({ accessKeys }));
         })
         .catch((e) => {
             next(e);
@@ -83,7 +84,7 @@ accessKeysRouter.post(
                     uid,
                     name: newToken.name,
                 });
-                res.send({ accessKey: info });
+                res.send(escapeObjectHtml({ accessKey: info }));
             })
             .catch((e) => {
                 if (e instanceof AppError) {
@@ -93,7 +94,7 @@ accessKeysRouter.post(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -109,12 +110,12 @@ accessKeysRouter.delete('/:name', checkToken, (req: Req<{ name: string }>, res, 
     return UserTokens.destroy({ where: { name, uid } })
         .then(() => {
             logger.info('delete acceesKey success', { uid, name });
-            res.send({ friendlyName: name });
+            res.send(escapeObjectHtml({ friendlyName: name }));
         })
         .catch((e) => {
             if (e instanceof AppError) {
                 logger.info('delete acceesKey failed', { uid, name });
-                res.status(406).send(e.message);
+                res.status(406).send(escapeHtml(e.message));
             } else {
                 next(e);
             }

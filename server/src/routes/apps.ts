@@ -25,6 +25,7 @@ import { deploymentsManager } from '../core/services/deployments-manager';
 import { packageManager } from '../core/services/package-manager';
 import { deleteFolderSync } from '../core/utils/common';
 import { PackagesInterface } from '../models/packages';
+import { escapeHtml, escapeObjectHtml } from '../utils/sanitize';
 
 function delay(ms: number) {
     return new Promise((resolve) => {
@@ -42,12 +43,12 @@ appsRouter.get('/', checkToken, (req: Req, res, next) => {
         .listApps(uid)
         .then((data) => {
             logger.info('list apps success', { uid });
-            res.send({ apps: data });
+            res.send(escapeObjectHtml({ apps: data }));
         })
         .catch((e) => {
             if (e instanceof AppError) {
                 logger.info('list apps failed', { uid, error: e.message });
-                res.status(406).send(e.message);
+                res.status(406).send(escapeHtml(e.message));
             } else {
                 next(e);
             }
@@ -72,7 +73,7 @@ appsRouter.get('/:appName/deployments', checkToken, (req: Req<{ appName: string 
                 uid,
                 appName,
             });
-            res.send({ deployments: data });
+            res.send(escapeObjectHtml({ deployments: data }));
         })
         .catch((e) => {
             if (e instanceof AppError) {
@@ -81,7 +82,7 @@ appsRouter.get('/:appName/deployments', checkToken, (req: Req<{ appName: string 
                     appName,
                     error: e.message,
                 });
-                res.status(406).send(e.message);
+                res.status(406).send(escapeHtml(e.message));
             } else {
                 next(e);
             }
@@ -106,7 +107,7 @@ appsRouter.get(
             .then((col) => {
                 return deploymentsManager.findDeloymentByName(deploymentName, col.appid, logger);
             })
-            .then((deploymentInfo) => {
+            .then(async (deploymentInfo) => {
                 if (_.isEmpty(deploymentInfo)) {
                     throw new AppError('does not find the deployment');
                 }
@@ -117,7 +118,8 @@ appsRouter.get(
                 });
 
                 // TODO: check if this works as expected
-                res.send({ deployment: deploymentsManager.listDeloyment(deploymentInfo) });
+                const deploymentResult = await deploymentsManager.listDeloyment(deploymentInfo);
+                res.send(escapeObjectHtml({ deployment: deploymentResult }));
                 return true;
             })
             .catch((e) => {
@@ -129,7 +131,7 @@ appsRouter.get(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -172,7 +174,7 @@ appsRouter.post(
                         deploymentName: name,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -312,7 +314,7 @@ appsRouter.get(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -366,7 +368,7 @@ appsRouter.delete(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -414,7 +416,7 @@ appsRouter.patch(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -458,7 +460,7 @@ appsRouter.delete(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -577,7 +579,7 @@ appsRouter.post(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -668,7 +670,7 @@ appsRouter.patch(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -783,7 +785,7 @@ appsRouter.post(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -861,7 +863,7 @@ function rollbackCb(
                     error: e.message,
                 });
 
-                res.status(406).send(e.message);
+                res.status(406).send(escapeHtml(e.message));
             } else {
                 next(e);
             }
@@ -921,7 +923,7 @@ appsRouter.get(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -960,7 +962,7 @@ appsRouter.post(
                     email,
                 });
 
-                res.send(data);
+                res.send(escapeObjectHtml(data));
             })
             .catch((e) => {
                 if (e instanceof AppError) {
@@ -971,7 +973,7 @@ appsRouter.post(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -1026,7 +1028,7 @@ appsRouter.delete(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -1054,7 +1056,7 @@ appsRouter.delete('/:appName', checkToken, (req: Req<{ appName: string }>, res, 
                 appName,
             });
 
-            res.send(data);
+            res.send(escapeObjectHtml(data));
         })
         .catch((e) => {
             if (e instanceof AppError) {
@@ -1064,7 +1066,7 @@ appsRouter.delete('/:appName', checkToken, (req: Req<{ appName: string }>, res, 
                     error: e.message,
                 });
 
-                res.status(406).send(e.message);
+                res.status(406).send(escapeHtml(e.message));
             } else {
                 next(e);
             }
@@ -1113,7 +1115,7 @@ appsRouter.patch('/:appName', checkToken, (req: Req<{ appName }, { name }>, res,
                     error: e.message,
                 });
 
-                res.status(406).send(e.message);
+                res.status(406).send(escapeHtml(e.message));
             } else {
                 next(e);
             }
@@ -1154,7 +1156,7 @@ appsRouter.post(
                     to: email,
                 });
 
-                res.send(data);
+                res.send(escapeObjectHtml(data));
             })
             .catch((e) => {
                 if (e instanceof AppError) {
@@ -1165,7 +1167,7 @@ appsRouter.post(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
@@ -1256,7 +1258,7 @@ appsRouter.post(
                         error: e.message,
                     });
 
-                    res.status(406).send(e.message);
+                    res.status(406).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }

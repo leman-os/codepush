@@ -3,6 +3,7 @@ import { AppError } from '../core/app-error';
 import { i18n } from '../core/i18n';
 import { checkToken, Req } from '../core/middleware';
 import { clientManager } from '../core/services/client-manager';
+import { escapeHtml, escapeObjectHtml } from '../utils/sanitize';
 
 export const indexRouter = express.Router();
 
@@ -63,14 +64,14 @@ indexRouter.get(
 
                 delete rs.packageId;
                 delete rs.rollout;
-                res.send({ updateInfo: rs });
+                res.send(escapeObjectHtml({ updateInfo: rs }));
             })
             .catch((e) => {
                 if (e instanceof AppError) {
                     logger.info('updateCheck failed', {
                         error: e.message,
                     });
-                    res.status(404).send(e.message);
+                    res.status(404).send(escapeHtml(e.message));
                 } else {
                     next(e);
                 }
