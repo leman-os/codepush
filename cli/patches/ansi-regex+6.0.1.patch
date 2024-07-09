@@ -1,0 +1,16 @@
+diff --git a/node_modules/ansi-regex/index.js b/node_modules/ansi-regex/index.js
+index 130a092..4bb51f0 100644
+--- a/node_modules/ansi-regex/index.js
++++ b/node_modules/ansi-regex/index.js
+@@ -1,4 +1,4 @@
+-export default function ansiRegex({onlyFirst = false} = {}) {
++function ansiRegex({onlyFirst = false} = {}) {
+ 	const pattern = [
+ 	    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+ 		'(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
+@@ -6,3 +6,5 @@ export default function ansiRegex({onlyFirst = false} = {}) {
+ 
+ 	return new RegExp(pattern, onlyFirst ? undefined : 'g');
+ }
++
++module.exports = ansiRegex;

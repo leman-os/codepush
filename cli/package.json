@@ -7,6 +7,8 @@
     "start": "tsc --watch",
     "build": "rm -rf bin && tsc",
     "release": "npm test && npm run build && standard-version && git push --follow-tags origin master && npm publish",
+    "updateAnsiRegexPackageJson": "node -e 'require(\"./update-ansi-regex-lib\").removeTypePropertyInAnsiRegexPackageJson()'",
+    "postinstall": "patch-package && npm run updateAnsiRegexPackageJson",
     "test": "echo 'no tests'"
   },
   "bin": {
@@ -64,6 +66,9 @@
     "@types/which": "2.0.1",
     "@types/yargs": "17.0.10",
     "@types/yazl": "2.4.2",
+    "fs-extra": "11.2.0",
+    "tasuku": "2.0.1",
+    "patch-package": "8.0.0",
     "standard-version": "9.5.0",
     "typescript": "4.7.4"
   },
